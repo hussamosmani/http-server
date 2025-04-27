@@ -18,6 +18,12 @@ class TCPServer:
 
         self.s.listen(10)
 
-    def connect(self):
-        conn, client_addr = self.s.accept()
-        data = conn.recv(1024)
+    def run(self):
+        while True:
+            conn, client_addr = self.s.accept()
+            data = conn.recv(1024)
+            self.handle_request(data.decode())
+
+    def handle_request(self, data: str):
+        """This should be overridden by subclasses"""
+        pass
