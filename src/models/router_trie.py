@@ -1,4 +1,4 @@
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Dict, Optional, Tuple
 from src.models.http_methods import HTTPMethod
 
 
@@ -18,17 +18,12 @@ class RouterTrie:
     def insert(self, path: str, handler: Callable[..., Any], method_type: HTTPMethod):
         """
         Inserts a route path into the trie.
-
-        Args:
-            path (str): The URL path (e.g., "/users/{id}").
-            handler (Callable): The function that handles the route.
-            method_type (HTTPMethod): The HTTP method associated with this route.
         """
         path_parts = path.split("/")
         node = self.root
 
         for part in path_parts:
-            normalised = "/" if part == "" else "{id}" if part[0] == "{" else part
+            normalised = "/" if part == "" else part
 
             if normalised not in node.children:
                 node.children[normalised] = RouterTrieNode()
@@ -39,37 +34,42 @@ class RouterTrie:
         node.handler = handler
         node.method_type = method_type
 
-    def search(self, path: str) -> Optional[RouterTrieNode]:
+    def search(
+        self, path: str, method_type: HTTPMethod
+    ) -> Optional[Tuple[Callable, Dict[str, str]]]:
         """
-        Searches for a complete route path in the trie.
-
-        Args:
-            path (str): The path to search (e.g., "/users/123").
-
-        Returns:
-            Optional[RouterTrieNode]: RouterTrieNode if a matching path exists, otherwise None.
+        Searches for a complete route path in the trie and returns callable and args.
         """
         path_parts = path.split("/")
         node = self.root
+        dynamic_keys = {}
 
         for part in path_parts:
             normalised = "/" if part == "" else part
 
             if normalised in node.children:
                 node = node.children[normalised]
-            elif "{id}" in node.children:
-                node = node.children["{id}"]
-            else:
-                return None
+                continue
 
-        return node
+            dynamic_key = next(
+                (key for key in node.children if key.startswith("{")), None
+            )
+            if dynamic_key:
+                dynamic_keys[dynamic_key[1:-1]] = normalised
+                node = node.children[dynamic_key]
+                continue
+
+            return None
+
+        return (
+            (node.handler, dynamic_keys)
+            if node.method_type == method_type.value
+            else None
+        )
 
     def __str__(self) -> str:
         """
         Returns a visual string representation of the trie structure.
-
-        Returns:
-            str: A tree-like formatted string of the trie.
         """
 
         def dfs(node, depth=0):

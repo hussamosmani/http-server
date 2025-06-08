@@ -22,10 +22,23 @@ class HTTPServer(TCPServer):
     def handle_request(self, data: str):
         method, request_target, protocol = data.split()
         if method == HTTPMethod.GET.value:
-            pass
+            self._handle_get(request_target=request_target)
+
         elif method == HTTPMethod.POST.value:
             pass
         elif method == HTTPMethod.PUT.value:
             pass
         else:
             raise HTTPMethodException(method)
+
+    def _handle_get(self, request_target: str):
+        found_handler_and_args = self.routes_trie.search(
+            path=request_target, method_type=HTTPMethod.GET
+        )
+        if not found_handler_and_args:
+            return
+        handler, args = found_handler_and_args
+
+        handler(**args)
+
+        exit()
