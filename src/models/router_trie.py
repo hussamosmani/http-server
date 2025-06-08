@@ -1,5 +1,5 @@
-from typing import Callable, Any
-from models.http_methods import HTTPMethod
+from typing import Callable, Any, Optional
+from src.models.http_methods import HTTPMethod
 
 
 class RouterTrieNode:
@@ -39,7 +39,7 @@ class RouterTrie:
         node.handler = handler
         node.method_type = method_type
 
-    def search(self, path: str) -> bool:
+    def search(self, path: str) -> Optional[RouterTrieNode]:
         """
         Searches for a complete route path in the trie.
 
@@ -47,7 +47,7 @@ class RouterTrie:
             path (str): The path to search (e.g., "/users/123").
 
         Returns:
-            bool: True if a matching path exists, otherwise False.
+            Optional[RouterTrieNode]: RouterTrieNode if a matching path exists, otherwise None.
         """
         path_parts = path.split("/")
         node = self.root
@@ -60,9 +60,9 @@ class RouterTrie:
             elif "{id}" in node.children:
                 node = node.children["{id}"]
             else:
-                return False
+                return None
 
-        return node.is_terminal
+        return node
 
     def __str__(self) -> str:
         """

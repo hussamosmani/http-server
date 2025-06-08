@@ -1,7 +1,7 @@
 from src.exceptions.http_exception import HTTPMethodException
 from src.tcp_server import TCPServer
-from models.router_trie import RouterTrie
-from models.http_methods import HTTPMethod
+from src.models.router_trie import RouterTrie
+from src.models.http_methods import HTTPMethod
 
 
 class HTTPServer(TCPServer):
@@ -13,9 +13,9 @@ class HTTPServer(TCPServer):
     def get(self, path):
 
         def wrapper(method):
-            print("registered", method)
-
-            exit()
+            self.routes_trie.insert(
+                path=path, handler=method, method_type=HTTPMethod.GET.value
+            )
 
         return wrapper
 
