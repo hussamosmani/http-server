@@ -1,27 +1,31 @@
-from enum import Enum
 from src.exceptions.http_exception import HTTPMethodException
 from src.tcp_server import TCPServer
-
-
-class HTTPMethod(Enum):
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
+from models.router_trie import RouterTrie
+from models.http_methods import HTTPMethod
 
 
 class HTTPServer(TCPServer):
 
     def __init__(self):
         super().__init__()
+        self.routes_trie = RouterTrie()
+
+    def get(self, path):
+
+        def wrapper(method):
+            print("registered", method)
+
+            exit()
+
+        return wrapper
 
     def handle_request(self, data: str):
         method, request_target, protocol = data.split()
-        print(method, request_target, protocol)
-        if method == HTTPMethod.GET:
+        if method == HTTPMethod.GET.value:
             pass
-        elif method == HTTPMethod.POST:
+        elif method == HTTPMethod.POST.value:
             pass
-        elif method == HTTPMethod.PUT:
+        elif method == HTTPMethod.PUT.value:
             pass
         else:
             raise HTTPMethodException(method)
