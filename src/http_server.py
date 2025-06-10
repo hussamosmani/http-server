@@ -32,6 +32,15 @@ class HTTPServer(TCPServer):
 
         return wrapper
 
+    def put(self, path):
+
+        def wrapper(method):
+            self.routes_trie.insert(
+                path=path, handler=method, method_type=HTTPMethod.PUT
+            )
+
+        return wrapper
+
     def handle_request(self, data: str):
         request = data.split("\r\n")
         method, request_target, protocol = request[0].split(" ")
@@ -45,7 +54,9 @@ class HTTPServer(TCPServer):
             )
 
         elif method == HTTPMethod.PUT.value:
-            pass
+            self._handle_request(
+                method=HTTPMethod.PUT, request_target=request_target, data=data
+            )
         else:
             raise HTTPMethodException(method)
 
