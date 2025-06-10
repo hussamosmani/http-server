@@ -18,7 +18,16 @@ class HTTPServer(TCPServer):
 
         def wrapper(method):
             self.routes_trie.insert(
-                path=path, handler=method, method_type=HTTPMethod.GET.value
+                path=path, handler=method, method_type=HTTPMethod.GET
+            )
+
+        return wrapper
+
+    def post(self, path):
+
+        def wrapper(method):
+            self.routes_trie.insert(
+                path=path, handler=method, method_type=HTTPMethod.POST
             )
 
         return wrapper
@@ -28,19 +37,23 @@ class HTTPServer(TCPServer):
         method, request_target, protocol = request[0].split(" ")
         data = json.loads(request[2]) if len(request) > 2 else None
         if method == HTTPMethod.GET.value:
-            self._handle_request(request_target=request_target)
+            self._handle_request(method=HTTPMethod.GET, request_target=request_target)
 
         elif method == HTTPMethod.POST.value:
-            self._handle_request(request_target=request_target, data=data)
+            self._handle_request(
+                method=HTTPMethod.POST, request_target=request_target, data=data
+            )
 
         elif method == HTTPMethod.PUT.value:
             pass
         else:
             raise HTTPMethodException(method)
 
-    def _handle_request(self, request_target: str, data: any = None):
+    def _handle_request(
+        self, method: HTTPMethod, request_target: str, data: any = None
+    ):
         found_handler_and_args = self.routes_trie.search(
-            path=request_target, method_type=HTTPMethod.GET
+            path=request_target, method_type=method
         )
         if not found_handler_and_args:
             return

@@ -60,12 +60,7 @@ class RouterTrie:
                 continue
 
             return None
-
-        return (
-            (node.handler, dynamic_keys)
-            if node.method_type == method_type.value
-            else None
-        )
+        return (node.handler, dynamic_keys) if node.method_type == method_type else None
 
     def __str__(self) -> str:
         """
