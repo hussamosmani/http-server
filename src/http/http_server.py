@@ -1,8 +1,8 @@
-from src.models.http_processor import HTTPProcessor
-from src.models.http_request_parser import HTTPParser
-from src.tcp_server import TCPServer
-from src.models.router_trie import RouterTrie
-from src.models.http_methods import HTTPMethod
+from src.http.processor import HTTPProcessor
+from src.http.request_parser import HTTPParser
+from src.core.tcp_server import TCPServer
+from src.http.router import RouterTrie
+from src.http.methods import HTTPMethod
 
 
 class HTTPServer(TCPServer):

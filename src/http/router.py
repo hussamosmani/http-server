@@ -1,5 +1,5 @@
 from typing import Callable, Any, Dict, Optional, Tuple
-from src.models.http_methods import HTTPMethod
+from src.http.methods import HTTPMethod
 
 
 class RouterTrieNode:

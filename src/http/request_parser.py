@@ -1,7 +1,7 @@
 import json
 from typing import Tuple
 
-from src.models.http_methods import HTTPMethod
+from src.http.methods import HTTPMethod
 
 
 class HTTPParser:

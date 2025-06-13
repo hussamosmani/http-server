@@ -1,8 +1,8 @@
 from typing import Any, Callable, Dict
 from src.exceptions.http_exception import HTTPMethodException
-from src.models.http_methods import HTTPMethod
+from src.http.methods import HTTPMethod
 from pydantic.main import ModelMetaclass
-from src.models.router_trie import RouterTrie
+from src.http.router import RouterTrie
 
 
 class HTTPProcessor:
