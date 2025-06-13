@@ -1,13 +1,22 @@
 import json
-from typing import Tuple
-
+from typing import Tuple, Dict
 from src.http.methods import HTTPMethod
 
 
 class HTTPParser:
+    def parse_request(self, raw_request: str) -> Tuple[str, str, str, Dict]:
+        """
+        Parses the raw HTTP request string into method, path, protocol, and body.
+        """
+        lines = raw_request.strip().split("\r\n")
+        if not lines or len(lines[0].split(" ")) != 3:
+            raise ValueError("Malformed request line")
 
-    def parse_request(self, data: str) -> Tuple[HTTPMethod, str, dict]:
-        request = data.split("\r\n")
-        method, request_target, protocol = request[0].split(" ")
-        data = json.loads(request[2]) if len(request) > 2 else None
-        return method, request_target, protocol, data
+        method, path, protocol = lines[0].split(" ")
+
+        try:
+            body = json.loads(lines[2]) if len(lines) > 2 else {}
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON body")
+
+        return method, path, protocol, body
