@@ -14,32 +14,28 @@ class HTTPServer(TCPServer):
         super().__init__()
         self.routes_trie = RouterTrie()
 
-    def get(self, path):
+    def route(self, path: str):
 
-        def wrapper(method):
-            self.routes_trie.insert(
-                path=path, handler=method, method_type=HTTPMethod.GET
-            )
+        def wrapper(method_type: HTTPMethod):
+            def decorator(method):
+
+                self.routes_trie.insert(
+                    path=path, handler=method, method_type=method_type
+                )
+
+            return decorator
 
         return wrapper
+
+    def get(self, path):
+        return self.route(path=path)(HTTPMethod.GET)
 
     def post(self, path):
 
-        def wrapper(method):
-            self.routes_trie.insert(
-                path=path, handler=method, method_type=HTTPMethod.POST
-            )
-
-        return wrapper
+        return self.route(path=path)(HTTPMethod.POST)
 
     def put(self, path):
-
-        def wrapper(method):
-            self.routes_trie.insert(
-                path=path, handler=method, method_type=HTTPMethod.PUT
-            )
-
-        return wrapper
+        return self.route(path=path)(HTTPMethod.PUT)
 
     def handle_request(self, data: str):
         request = data.split("\r\n")
