@@ -6,8 +6,7 @@ class RouterTrieNode:
     def __init__(self):
         self.children = {}
         self.is_terminal = False
-        self.handler = None
-        self.method_type = None
+        self.handler_method_type_pair = {}
 
 
 class RouterTrie:
@@ -31,8 +30,7 @@ class RouterTrie:
             node = node.children[normalised]
 
         node.is_terminal = True
-        node.handler = handler
-        node.method_type = method_type
+        node.handler_method_type_pair[method_type] = handler
 
     def search(
         self, path: str, method_type: HTTPMethod
@@ -60,7 +58,11 @@ class RouterTrie:
                 continue
 
             return None
-        return (node.handler, dynamic_keys) if node.method_type == method_type else None
+        return (
+            (node.handler_method_type_pair[method_type], dynamic_keys)
+            if method_type in list(node.handler_method_type_pair.keys())
+            else None
+        )
 
     def __str__(self) -> str:
         """
