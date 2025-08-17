@@ -2,7 +2,7 @@ from typing import Any, Callable, Dict
 from pydantic.main import ModelMetaclass
 
 from src.exceptions.http_exception import HTTPMethodException
-from src.http.methods import HTTPMethod
+from src.http.models.methods import HTTPMethod
 from src.http.router import RouterTrie
 
 

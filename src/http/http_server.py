@@ -2,7 +2,7 @@ from src.http.processor import HTTPProcessor
 from src.http.request_parser import HTTPParser
 from src.core.tcp_server import TCPServer
 from src.http.router import RouterTrie
-from src.http.methods import HTTPMethod
+from src.http.models.methods import HTTPMethod
 from typing import Callable
 
 
