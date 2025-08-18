@@ -3,7 +3,7 @@ from typing import Tuple, Dict
 from src.http.models.methods import HTTPMethod
 from urllib.parse import parse_qs
 
-supported_headers = set(["Content-Type"])
+supported_headers = set(["Content-Type", "Content-Length"])
 
 
 class HTTPParser:
@@ -35,5 +35,15 @@ class HTTPParser:
 
                 else:
                     exit()
+            elif header_name == "Content-Length":
+                try:
+                    content_length = int(header_value)
+                except ValueError:
+                    raise ValueError("Invalid Content-Length header (not an integer)")
+                actual_length = len(lines[-1].encode())
+                if actual_length != content_length:
+                    raise ValueError(
+                        f"Content-Length mismatch: expected {content_length}, got {actual_length}"
+                    )
 
         return method, path, protocol, body
