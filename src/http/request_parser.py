@@ -1,13 +1,13 @@
 import json
 from typing import Tuple, Dict
-from src.http.models.methods import HTTPMethod
+from src.http.models.headers import Headers
 from urllib.parse import parse_qs
 
 supported_headers = set(["Content-Type", "Content-Length"])
 
 
 class HTTPParser:
-    def parse_request(self, raw_request: str) -> Tuple[str, str, str, Dict]:
+    def parse_request(self, raw_request: str) -> Tuple[str, str, str, Dict, Headers]:
         """
         Parses the raw HTTP request string into method, path, protocol, and body.
         """
@@ -18,9 +18,11 @@ class HTTPParser:
         method, path, protocol = lines[0].split(" ")
 
         headers_list = lines[1:-2]
+        headers_dict = {}
         for header in headers_list:
             header_name, header_value = header.split(":")
             header_name, header_value = header_name.strip(), header_value.strip()
+            headers_dict[header_name] = header_value
             if header_name not in supported_headers:
                 exit()
             if header_name == "Content-Type":
@@ -45,5 +47,6 @@ class HTTPParser:
                     raise ValueError(
                         f"Content-Length mismatch: expected {content_length}, got {actual_length}"
                     )
+        headers = Headers(headers_dict)
 
-        return method, path, protocol, body
+        return method, path, protocol, body, headers

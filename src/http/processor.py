@@ -3,6 +3,7 @@ from pydantic.main import ModelMetaclass
 
 from src.exceptions.http_exception import HTTPMethodException
 from src.http.models.methods import HTTPMethod
+from src.http.models.headers import Headers
 from src.http.router import RouterTrie
 
 
@@ -10,7 +11,13 @@ class HTTPProcessor:
     def __init__(self, router: RouterTrie):
         self.router = router
 
-    def handle_request(self, method_str: str, request_target: str, data: Any = None):
+    def handle_request(
+        self,
+        method_str: str,
+        request_target: str,
+        headers: Headers,
+        data: Any = None,
+    ):
         """
         Entry point: converts method string to enum, validates, and dispatches to handler.
         """
@@ -20,9 +27,11 @@ class HTTPProcessor:
             raise HTTPMethodException(method_str)
 
         body = data if method in {HTTPMethod.POST, HTTPMethod.PUT} else None
-        self._dispatch_to_handler(method, request_target, body)
+        self._dispatch_to_handler(method, request_target, headers, body)
 
-    def _dispatch_to_handler(self, method: HTTPMethod, path: str, body: Any = None):
+    def _dispatch_to_handler(
+        self, method: HTTPMethod, path: str, headers: Headers, body: Any = None
+    ):
         """
         Resolves the handler from the router and invokes it with parsed args.
         """
@@ -33,7 +42,9 @@ class HTTPProcessor:
         handler, path_args = match
         model_args = self._build_model_args(handler, body) if body else {}
 
-        combined_args = {**path_args, **model_args}
+        headers = {"headers": headers} if "headers" in handler.__annotations__ else {}
+
+        combined_args = {**path_args, **model_args, **headers}
         handler(**combined_args)
 
     def _build_model_args(

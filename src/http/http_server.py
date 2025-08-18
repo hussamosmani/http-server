@@ -29,10 +29,13 @@ class HTTPServer(TCPServer):
         return decorator
 
     def handle_request(self, raw_data: str):
-        method_name, request_target, protocol, body = self.http_parser.parse_request(
-            raw_data
+        method_name, request_target, protocol, body, headers = (
+            self.http_parser.parse_request(raw_data)
         )
         self.http_processor.handle_request(
-            method_str=method_name, request_target=request_target, data=body
+            method_str=method_name,
+            request_target=request_target,
+            headers=headers,
+            data=body,
         )
         exit()
