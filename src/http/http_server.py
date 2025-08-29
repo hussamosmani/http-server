@@ -32,10 +32,12 @@ class HTTPServer(TCPServer):
         method_name, request_target, protocol, body, headers = (
             self.http_parser.parse_request(raw_data)
         )
-        self.http_processor.handle_request(
+        res = self.http_processor.handle_request(
             method_str=method_name,
             request_target=request_target,
             headers=headers,
             data=body,
         )
+
+        res.add_required_headers(headers=headers)
         exit()

@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict
 from pydantic.main import ModelMetaclass
 
+from src.http.models.response import JSONResponse
 from src.exceptions.http_exception import HTTPMethodException
 from src.http.models.methods import HTTPMethod
 from src.http.models.headers import Headers
@@ -17,7 +18,7 @@ class HTTPProcessor:
         request_target: str,
         headers: Headers,
         data: Any = None,
-    ):
+    ) -> JSONResponse:
         """
         Entry point: converts method string to enum, validates, and dispatches to handler.
         """
@@ -27,11 +28,11 @@ class HTTPProcessor:
             raise HTTPMethodException(method_str)
 
         body = data if method in {HTTPMethod.POST, HTTPMethod.PUT} else None
-        self._dispatch_to_handler(method, request_target, headers, body)
+        return self._dispatch_to_handler(method, request_target, headers, body)
 
     def _dispatch_to_handler(
         self, method: HTTPMethod, path: str, headers: Headers, body: Any = None
-    ):
+    ) -> JSONResponse:
         """
         Resolves the handler from the router and invokes it with parsed args.
         """
@@ -45,7 +46,7 @@ class HTTPProcessor:
         headers = {"headers": headers} if "headers" in handler.__annotations__ else {}
 
         combined_args = {**path_args, **model_args, **headers}
-        handler(**combined_args)
+        return handler(**combined_args)
 
     def _build_model_args(
         self, handler: Callable, body: Dict[str, Any]
