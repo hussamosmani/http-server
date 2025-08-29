@@ -3,7 +3,17 @@ from typing import Tuple, Dict
 from src.http.models.headers import Headers
 from urllib.parse import parse_qs
 
-supported_headers = set(["Content-Type", "Content-Length"])
+supported_headers = set(
+    [
+        "Content-Type",
+        "Content-Length",
+        "Accept",
+        "Authorisation",
+        "User-Agent",
+        "Cache-Control",
+        "Accept-Encoding",
+    ]
+)
 
 
 class HTTPParser:
