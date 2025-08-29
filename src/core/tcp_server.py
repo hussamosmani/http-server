@@ -1,5 +1,7 @@
 import socket
 
+from src.http.models.response import JSONResponse
+
 
 class TCPServer:
 
@@ -22,8 +24,11 @@ class TCPServer:
         while True:
             conn, client_addr = self.s.accept()
             data = conn.recv(1024)
-            self.handle_request(data.decode())
+            res = self.handle_request(data.decode())
+            conn.sendall(bytes(res))
+            conn.close()
+            exit()
 
-    def handle_request(self, data: str):
+    def handle_request(self, data: str) -> JSONResponse:
         """This should be overridden by subclasses"""
         pass

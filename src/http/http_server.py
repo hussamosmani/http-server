@@ -1,3 +1,4 @@
+from src.http.models.response import JSONResponse
 from src.http.processor import HTTPProcessor
 from src.http.request_parser import HTTPParser
 from src.core.tcp_server import TCPServer
@@ -28,7 +29,7 @@ class HTTPServer(TCPServer):
 
         return decorator
 
-    def handle_request(self, raw_data: str):
+    def handle_request(self, raw_data: str) -> JSONResponse:
         method_name, request_target, protocol, body, headers = (
             self.http_parser.parse_request(raw_data)
         )
@@ -40,4 +41,5 @@ class HTTPServer(TCPServer):
         )
 
         res.add_required_headers(headers=headers)
-        exit()
+
+        return res
