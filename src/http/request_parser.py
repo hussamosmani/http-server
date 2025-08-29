@@ -28,7 +28,6 @@ class HTTPParser:
             header_name, header_value = header_name.strip(), header_value.strip()
             headers_dict[header_name] = header_value
 
-            # validate against enum values
             if header_name not in [h.value for h in SupportedHeaders]:
                 raise ValueError(f"Unsupported header: {header_name}")
 

@@ -12,7 +12,6 @@ class JSONResponse:
             self._headers.update(custom_headers)
 
     def add_required_headers(self, headers: Headers):
-        # Make sure keys are strings, not enum objects
         self._headers[SupportedHeaders.CONTENT_TYPE.value] = headers.get(
             SupportedHeaders.CONTENT_TYPE
         )

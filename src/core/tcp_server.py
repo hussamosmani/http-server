@@ -23,11 +23,12 @@ class TCPServer:
     def run(self):
         while True:
             conn, client_addr = self.s.accept()
-            data = conn.recv(1024)
-            res = self.handle_request(data.decode())
-            conn.sendall(bytes(res))
-            conn.close()
-            exit()
+            try:
+                data = conn.recv(1024)
+                res = self.handle_request(data.decode())
+                conn.sendall(bytes(res))
+            finally:
+                conn.close()
 
     def handle_request(self, data: str) -> JSONResponse:
         """This should be overridden by subclasses"""
